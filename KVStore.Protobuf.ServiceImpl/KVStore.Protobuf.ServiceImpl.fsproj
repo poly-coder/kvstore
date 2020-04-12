@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <AssemblyName>PolyCoder.KVStore.Protobuf.ServiceImpl</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="KeyValueStore.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Grpc" Version="2.27.0" />
+    <PackageReference Include="PolyCoder.Preamble" Version="0.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\KVStore.Abstractions\KVStore.Abstractions.fsproj" />
+    <ProjectReference Include="..\KVStore.Protobuf\KVStore.Protobuf.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="4.7.1" />
+  </ItemGroup>
+
+</Project>

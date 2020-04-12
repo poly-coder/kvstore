@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <AssemblyName>PolyCoder.KVStore.Abstractions</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Preamble.fs" />
+    <Compile Include="KeyValueStore.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="4.7.1" />
+  </ItemGroup>
+
+</Project>
