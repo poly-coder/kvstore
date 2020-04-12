@@ -1,6 +1,6 @@
 ﻿namespace PolyCoder.KVStore.Abstractions
 
-open PolyCoder.Preamble
+open PolyCoder
 
 type StoreKeyValue<'key, 'value> = 'key -> 'value -> Async<unit>
 type RemoveKey<'key> = 'key -> Async<unit>

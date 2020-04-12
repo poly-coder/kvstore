@@ -1,22 +1,24 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <AssemblyName>PolyCoder.KVStore.Protobuf.ServiceImpl</AssemblyName>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="KeyValueStore.fs" />
+    <Compile Include="Startup.fs" />
+    <Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Grpc" Version="2.28.1" />
+    <PackageReference Include="Google.Protobuf" Version="3.11.4" />
+    <PackageReference Include="Grpc.AspNetCore.Server.ClientFactory" Version="2.28.0" />
     <PackageReference Include="PolyCoder.Preamble" Version="0.0.8" />
     <PackageReference Include="TaskBuilder.fs" Version="2.1.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\KVStore.Abstractions\KVStore.Abstractions.fsproj" />
+    <ProjectReference Include="..\KVStore.Protobuf.ServiceImpl\KVStore.Protobuf.ServiceImpl.fsproj" />
     <ProjectReference Include="..\KVStore.Protobuf\KVStore.Protobuf.csproj" />
   </ItemGroup>
 

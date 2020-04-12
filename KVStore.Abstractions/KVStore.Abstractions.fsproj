@@ -6,8 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Preamble.fs" />
     <Compile Include="KeyValueStore.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="PolyCoder.Preamble" Version="0.0.8" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,12 +1,14 @@
 ﻿namespace PolyCoder.KVStore.Azure.Blobs
 
+open PolyCoder
+open PolyCoder.System
 open PolyCoder.KVStore.Abstractions
+open Azure
 open Azure.Storage.Blobs
 open System.IO
-open Azure
-open PolyCoder.Preamble
 
 module KeyValueStore =
+  [<CLIMutable>]
   type CreateKeyValueStoreOptions = {
     container: Lazy<Async<BlobContainerClient>>
   }
@@ -61,3 +63,34 @@ module KeyValueStore =
     }
 
     KeyValueStore.assemble store remove retrieve
+
+  module FromConfig =
+
+    type CreateKeyValueStoreConfig = {
+      connectionString: string
+      container: string
+      doNotCreateContainer: bool
+      accessType: Models.PublicAccessType
+    }
+
+    let optionsFromConfig (config: CreateKeyValueStoreConfig) : CreateKeyValueStoreOptions =
+      let getContainer() = async {
+        let container = new BlobContainerClient(config.connectionString, config.container)
+
+        if not config.doNotCreateContainer then
+          let! _containerInfo =
+            container.CreateIfNotExistsAsync(publicAccessType = config.accessType)
+            |> Async.AwaitTask
+          ()
+
+        return container
+      }
+
+      { container = lazy (Async.toPromise (getContainer ())) }
+
+    let create (config: CreateKeyValueStoreConfig) : KeyValueStore<byte[], byte[]> =
+      let options = optionsFromConfig config
+
+      let kvstore = create options
+
+      kvstore |> KeyValueStore.convertKeys utf8ToString
