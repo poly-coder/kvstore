@@ -5,7 +5,25 @@ open PolyCoder.System
 open PolyCoder.KVStore.Abstractions
 open Azure
 open Azure.Storage.Blobs
+open System
 open System.IO
+open System.Reflection
+
+module Exn =
+  let findInner<'a when 'a :> exn> (exn: exn) : 'a option =
+    let rec find (e: exn) =
+      let fromSeq source = 
+        source
+          |> Seq.map find
+          |> Seq.tryFind Option.isSome
+          |> Option.flatten
+      match e with
+      | :? 'a as exn -> Some exn
+      | :? TargetInvocationException as targetExn -> find targetExn.InnerException
+      | :? AggregateException as aggExn -> fromSeq aggExn.InnerExceptions
+      | _ -> None
+
+    find exn
 
 module KeyValueStore =
   [<CLIMutable>]
@@ -55,17 +73,19 @@ module KeyValueStore =
         return Some <| content.ToArray()
 
       with
-      | :? RequestFailedException as exn
-        when exn.Status = 404 ->
-        return None
       | exn ->
-        return Exn.reraise exn
+        match Exn.findInner<RequestFailedException> exn with
+        | Some exn when exn.Status = 404 ->
+          return None
+        | _ ->
+          return Exn.reraise exn
     }
 
     KeyValueStore.assemble store remove retrieve
 
   module FromConfig =
 
+    [<CLIMutable>]
     type CreateKeyValueStoreConfig = {
       connectionString: string
       container: string
@@ -86,7 +106,7 @@ module KeyValueStore =
         return container
       }
 
-      { container = lazy (Async.toPromise (getContainer ())) }
+      { container = lazy (getContainer ()) }
 
     let create (config: CreateKeyValueStoreConfig) : KeyValueStore<byte[], byte[]> =
       let options = optionsFromConfig config
