@@ -11,12 +11,16 @@ open Microsoft.Extensions.Configuration
 open Microsoft.OpenApi.Models
 open System.Collections.Generic
 open Microsoft.AspNetCore.Mvc.Controllers
+open PolyCoder.KVStore.Protobuf.ServiceImpl
+open PolyCoder.KVStore.Abstractions
 
 type Startup(configRoot: IConfiguration) =
 
     // This method gets called by the runtime. Use this method to add services to the container.
     // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
     member this.ConfigureServices(services: IServiceCollection) =
+        services.AddGrpc() |> ignore
+
         services.AddControllers() |> ignore
 
         services.AddSwaggerGen(fun config ->
@@ -54,10 +58,14 @@ type Startup(configRoot: IConfiguration) =
 
             | _ ->
                 invalidOp (sprintf "Unknown KVStore mode: %s" mode)
-
         ) |> ignore
 
-        ()
+        services.AddSingleton<KeyValueStoreServiceImplOptions>(fun (provider: IServiceProvider) ->
+            let result: KeyValueStoreServiceImplOptions = {
+                kvstore = provider.GetService<KeyValueStore<byte[], byte[]>>()
+            }
+            result
+        ) |> ignore
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     member this.Configure(app: IApplicationBuilder, env: IWebHostEnvironment) =
@@ -73,7 +81,7 @@ type Startup(configRoot: IConfiguration) =
         app.UseRouting() |> ignore
 
         app.UseEndpoints(fun endpoints ->
-            endpoints.MapControllers() |> ignore
+            endpoints.MapGrpcService<KeyValueStoreServiceImpl>() |> ignore
 
-            // endpoints.MapGet("/", fun context -> context.Response.WriteAsync("Hello World!")) |> ignore
+            endpoints.MapControllers() |> ignore
         ) |> ignore
