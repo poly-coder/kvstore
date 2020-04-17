@@ -29,14 +29,19 @@ module KeyValueStore =
   [<CLIMutable>]
   type CreateKeyValueStoreOptions = {
     container: Lazy<Async<BlobContainerClient>>
+    subFolder: string
   }
 
   let create (options: CreateKeyValueStoreOptions) : KeyValueStore<string, byte[]> =
+    let makeKey =
+      if String.IsNullOrEmpty options.subFolder then id
+      else sprintf "%s/%s" options.subFolder
+
     let store key value = async {
       let! container = options.container.Value
       let! cancel = Async.CancellationToken
-      
-      let blob = container.GetBlobClient key
+
+      let blob = makeKey key |> container.GetBlobClient
 
       use content = new MemoryStream(value: byte[])
 
@@ -49,7 +54,7 @@ module KeyValueStore =
       let! container = options.container.Value
       let! cancel = Async.CancellationToken
       
-      let blob = container.GetBlobClient key
+      let blob = makeKey key |> container.GetBlobClient
 
       let! _response = blob.DeleteIfExistsAsync(cancellationToken = cancel) |> Async.AwaitTask
 
@@ -60,7 +65,7 @@ module KeyValueStore =
       let! container = options.container.Value
       let! cancel = Async.CancellationToken
       
-      let blob = container.GetBlobClient key
+      let blob = makeKey key |> container.GetBlobClient
       
       use content = new MemoryStream()
 
@@ -91,6 +96,7 @@ module KeyValueStore =
       container: string
       doNotCreateContainer: bool
       accessType: Models.PublicAccessType
+      subFolder: string
     }
 
     let optionsFromConfig (config: CreateKeyValueStoreConfig) : CreateKeyValueStoreOptions =
@@ -106,7 +112,8 @@ module KeyValueStore =
         return container
       }
 
-      { container = lazy (getContainer ()) }
+      { container = lazy (getContainer ())
+        subFolder = config.subFolder }
 
     let create (config: CreateKeyValueStoreConfig) : KeyValueStore<byte[], byte[]> =
       let options = optionsFromConfig config

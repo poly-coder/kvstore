@@ -1,6 +1,7 @@
 namespace PolyCoder.KVStore.Service
 
 open System
+open System.Reflection
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
 open Microsoft.AspNetCore.Http
@@ -8,6 +9,8 @@ open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.Configuration
 open Microsoft.OpenApi.Models
+open System.Collections.Generic
+open Microsoft.AspNetCore.Mvc.Controllers
 
 type Startup(configRoot: IConfiguration) =
 
@@ -21,6 +24,23 @@ type Startup(configRoot: IConfiguration) =
             apiInfo.Title <- "Key-Value Store"
             apiInfo.Version <- "v0"
             config.SwaggerDoc("v0", apiInfo) |> ignore
+
+            config.TagActionsBy(fun desc ->
+                match desc.ActionDescriptor with
+                | :? ControllerActionDescriptor as desc ->
+                    let controllerAttr = desc.ControllerTypeInfo.GetCustomAttribute<SwaggerOperationTagsAttribute>()
+                    let actionAttr = desc.MethodInfo.GetCustomAttribute<SwaggerOperationTagsAttribute>()
+                    seq {
+                        if isNull controllerAttr |> not then
+                            yield! controllerAttr.Tags
+                        if isNull actionAttr |> not then
+                            yield! actionAttr.Tags
+                    }
+                | _ -> Seq.empty
+                |> Seq.distinct
+                |> Seq.toArray
+                :> IList<_>
+            )
         ) |> ignore
 
         services.AddSingleton<KVStoreService>(fun (provider: IServiceProvider) ->

@@ -39,4 +39,3 @@ module KVStoreService =
     let kvstore = method.Invoke(null, [| createOptions |]) :?> KeyValueStore<byte[], byte[]>
     
     kvstore
-
