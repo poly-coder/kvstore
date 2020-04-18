@@ -13,6 +13,8 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "KVStore.Protobuf.ServiceImp
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "KVStore.Service", "KVStore.Service\KVStore.Service.fsproj", "{A921868B-2D78-4D97-9CD4-B3C3F648EBEB}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "KVStore.Client", "KVStore.Client\KVStore.Client.fsproj", "{D5A7FE84-A0D2-4306-94C0-9A87E4449E33}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{A921868B-2D78-4D97-9CD4-B3C3F648EBEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A921868B-2D78-4D97-9CD4-B3C3F648EBEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A921868B-2D78-4D97-9CD4-B3C3F648EBEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5A7FE84-A0D2-4306-94C0-9A87E4449E33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5A7FE84-A0D2-4306-94C0-9A87E4449E33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5A7FE84-A0D2-4306-94C0-9A87E4449E33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5A7FE84-A0D2-4306-94C0-9A87E4449E33}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
