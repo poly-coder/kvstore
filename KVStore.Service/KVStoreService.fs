@@ -4,6 +4,8 @@ open PolyCoder.KVStore.Abstractions
 open Microsoft.Extensions.Configuration
 open System
 open System.Reflection
+open System.IO
+open System.Runtime.Loader
 
 type KVStoreService = KeyValueStore<byte[], byte[]>
 
@@ -26,7 +28,17 @@ module KVStoreService =
   let fromConfig (config: #IConfiguration) (options: FromConfigOptions) : KVStoreService = 
     let assembly =
         if String.IsNullOrEmpty options.AssemblyFile |> not then
-            Assembly.LoadFile options.AssemblyFile
+            let folder = Path.GetDirectoryName(options.AssemblyFile)
+            let result = ref Unchecked.defaultof<_>
+            Directory.EnumerateFiles(folder, "*.dll", SearchOption.TopDirectoryOnly)
+            |> Seq.iter (fun fileName ->
+                try
+                    let loaded = AssemblyLoadContext.Default.LoadFromAssemblyPath(fileName)
+                    if options.AssemblyFile = fileName then result := loaded
+                with
+                | _exn -> ()
+            )
+            !result
         elif String.IsNullOrEmpty options.Assembly |> not then
             Assembly.Load options.Assembly
         else

@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="PolyCoder.Preamble" Version="0.0.8" />
+    <PackageReference Include="PolyCoder.Preamble" Version="0.0.9" />
   </ItemGroup>
 
   <ItemGroup>
